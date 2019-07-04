@@ -1,0 +1,117 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+body {
+    background-color: #161616;
+    color:white;
+    overflow-wrap: break-word;
+    margin-bottom: 130px;
+}
+
+footer {
+    background-color: #161616;
+}
+
+.hpnum, .shieldnum {
+    font-weight: 300;
+}
+
+.hpnum {
+    font-size: 2rem;
+}
+
+.shieldnum {
+    font-size: 1.25rem;
+}
+
+.circle {
+    position: relative;
+}
+
+.progressbar {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.bar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.bar div {
+    position: absolute;
+}
+
+.bar table {
+    width: 120px;
+    height: 120px;
+}
+
+.bar #bar-base, .bar #bar-red {
+    width: 120px;
+    height: 120px;
+}
+
+.bar #bar-shield-base, .bar #bar-shield-red {
+    width: 105px;
+    height: 105px;
+    top: 7.5px;
+    left: 7.5px;
+}
+
+.numTable {
+    width: 100%;
+    height: 100%;
+}
+
+.numTable .hpnum {
+    vertical-align: bottom;
+}
+
+.numTable .shieldnum {
+    vertical-align: top;
+}
+
+.status-icons {
+    font-size: 3rem;
+}
+
+.dot-planet {
+    font-size: 2rem;
+}
+
+
+@media only screen and (max-width: 1024px){
+    .status-icons {
+        font-size: 2.5rem;
+    }
+    .status-text {
+        font-size: 0.96rem;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .status-icons {
+        font-size: 2.25rem;
+    }
+
+    .status-text {
+        font-size: 0.92rem;
+    }
+
+    .dot-planet {
+        font-size: 1.5rem;
+    }
+}
+
+@media only screen and (max-width: 576px) {
+    .status-icons {
+        font-size: 2rem;
+    }
+
+    .status-text {
+        font-size: 0.85rem;
+    }
+}

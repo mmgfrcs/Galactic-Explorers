@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "jquery@3.4.1",
+      "destination": "wwwroot/lib/jquery/",
+      "files": [
+        "jquery.min.js",
+        "jquery.js"
+      ]
+    },
+    {
+      "library": "popper.js@1.15.0",
+      "destination": "wwwroot/lib/popper.js/",
+      "files": [
+        "popper.min.js",
+        "popper.js"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "bootstrap@4.3.1",
+      "destination": "wwwroot/lib/bootstrap/",
+      "files": [
+        "dist/js/bootstrap.js",
+        "dist/js/bootstrap.min.js",
+        "dist/css/bootstrap.css",
+        "dist/css/bootstrap.min.css"
+      ]
+    },
+    {
+      "library": "progressbar.js@1.0.1",
+      "destination": "wwwroot/lib/progressbar/"
+    }
+  ]
+}
