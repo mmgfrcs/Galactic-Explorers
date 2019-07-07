@@ -14,11 +14,19 @@ namespace GalacticExplorers
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            string envPort = Environment.GetEnvironmentVariable("PORT");
+            int port = 5001;
+            if(envPort != null)
+            {
+                port = int.Parse(envPort);
+            }
+
+            CreateWebHostBuilder(args, port).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args, int port) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseUrls("https://0.0.0.0:" + port.ToString());
     }
 }

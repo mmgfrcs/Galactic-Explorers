@@ -1,0 +1,13 @@
+﻿{
+	"id": "GAME-START-LOST",
+	"title": "Lost In Space",
+  "descriptionLine": [ "Lorem ipsum", "Lorem 2" ],
+	"weight": 0,
+	"choices": [
+		{
+      "iconClass": "",
+      "text": "Continue...",
+      "gotoId": "GAME-START-LOST-2"
+		}
+	]
+}

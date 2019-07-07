@@ -1,184 +1,215 @@
 ﻿@using System.Globalization;
+@using GalacticExplorers;
+@using System.Linq;
+@using GalacticExplorers.Entities;
+@using GalacticExplorers.JSONUtilities;
+@using Newtonsoft.Json;
+@model GameData
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Home Page";
+    Shield shield = Model?.Player.Systems.Find(x => x.SystemName == "Shield") as Shield;
 }
 <nav id="top" class="navbar navbar-expand-sm bg-dark navbar-dark mb-2">
     <a class="navbar-brand" href="#">Galactic Explorers</a>
     <ul class="navbar-nav">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                Divia Indira Arifin
+                @(Model == null ? "Guest" : Model.Player.Name)
             </a>
             <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Start New Game</a>
-                <a class="dropdown-item" href="#">Load Game</a>
+                <a class="dropdown-item" href="#" onclick="showRegister()">Start New Game</a>
+                <a class="dropdown-item" href="#" onclick="showLogin()">Load Game</a>
                 <a class="dropdown-item" href="#">Save Game</a>
                 <hr />
                 <a class="dropdown-item" href="#">Logout</a>
             </div>
         </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                Session
-            </a>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Link 1</a>
-                <a class="dropdown-item" href="#">Link 2</a>
-                <a class="dropdown-item" href="#">Link 3</a>
-            </div>
+        <li class="nav-item navbar-text">
+            @(Model != null ? Model.SessionId : "Session")
         </li>
     </ul>
 
 </nav>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="position-relative border m-2 mb-3" style="width: 100%; height: 480px">
-            @{Random rnd = new Random(); double pX = -1, pY = -1; string spanClass = "";}
-            @for (int i = 0; i < 20; i++)
+@if (Model != null)
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="position-relative border m-2 mb-3" style="width: 100%; height: 480px">
+                @{string spanClass = "";}
+                @foreach (var loc in Model.Player.CurrentSector.Locations)
+                {
+                    if (loc.dangerLevel == DangerLevel.Hostile) { spanClass = "text-danger"; }
+                    else if (loc.dangerLevel == DangerLevel.Friendly) { spanClass = "text-success"; }
+                    else { spanClass = ""; }
+                    <span class="fas fa-circle dot-planet position-absolute @spanClass" style="top: @loc.position.x% ; left: @loc.position.y%"></span>
+                }
+
+                <span class="far fa-dot-circle dot-player position-absolute" style="top: @Model.Player.Position.x%; left: @Model.Player.Position.y%"> </span>
+
+            </div>
+        </div>
+        <div class="row">
+            <h1 class="col">@Model.Story.title <small>(@Model.Player.Position.x.ToString("n0"),@Model.Player.Position.y.ToString("n0"))</small></h1>
+        </div>
+        <div class="row text-center lead">
+            <div class="col-md"><span class="fas fa-coins"></span> @Model.Player.Cash.ToString("n0")</div>
+            <div class="col-md"><span class="fas fa-boxes"></span> @Model.Player.Material.ToString("n0")</div>
+            <div class="col-md"><span class="fas fa-gas-pump"></span> @Model.Player.Fuel.ToString("n0")</div>
+        </div>
+        <div class="row">
+            <p class="col text-muted">Location: @Model.Player.CurrentSector.SectorName</p>
+        </div>
+        <div class="row">
+            <div class="col-xl-9 col-lg-8 col-md-7 ">
+                @foreach(var desc in Model.Story.descriptionLine)
+                {
+                    <p>@desc</p>
+                }
+
+            </div>
+            <div class="col-xl-3 col-lg-4 col-md-5 text-right">
+                <button class="btn-block btn-primary" onclick="clicky()"><span class="fas fa-rocket"></span> Ship Info</button>
+                <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Missions</button>
+                <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Others</button>
+                <hr style="border-top: 1px solid white" />
+                <button class="btn-block btn-danger"><span class="fas fa-rocket"></span> Self-Destruct</button>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr style="border-top: 1px solid white" />
+            </div>
+        </div>
+        <div class="row">
+            @{ int i = 0; }
+            @foreach (var choice in Model.Story.choices)
             {
-                double x = rnd.NextDouble() * 90;
-                double y = rnd.NextDouble() * 90;
-                if(pX >= 0 && rnd.NextDouble() > 0.7)
-                {
-                    pX = x;
-                    pY = y;
-                }
-                else if(i == 19 && pX < 0)
-                {
-                    pX = x;
-                    pY = y;
-                }
-
-                if (rnd.NextDouble() > 0.75) { spanClass = "text-danger"; }
-                else if (rnd.NextDouble() < 0.25) { spanClass = "text-success"; }
-            <span class="fas fa-circle dot-planet position-absolute @spanClass" style="top: @x.ToString("n4", new CultureInfo("en-US"))% ; left: @y.ToString("n4", new CultureInfo("en-US"))%"></span>
+                <div class="col-lg m-1">
+                    <button class="btn-block btn-primary">@choice.text</button>
+                </div>
             }
-
-            <span class="far fa-dot-circle dot-planet position-absolute" style="top: @pX.ToString("n4", new CultureInfo("en-US"))%; left: @pY.ToString("n4", new CultureInfo("en-US"))%"> </span>
         </div>
-    </div>
-    <div class="row">
-        <h1 class="col">Ship Stranded <small>(14,6)</small></h1>
-    </div>
-    <div class="row text-center lead">
-        <div class="col-md"><span class="fas fa-coins"></span> $147,300</div>
-        <div class="col-md"><span class="fas fa-boxes"></span> 1,000</div>
-        <div class="col-md"><span class="fas fa-gas-pump"></span> 100</div>
-    </div>
-    <div class="row">
-        <p class="col text-muted">Location: Unknown</p>
-    </div>
-    <div class="row">
-        <div class="col-xl-9 col-lg-8 col-md-7 ">
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam fringilla nibh eu tellus tincidunt venenatis. Ut commodo odio eget eros porta euismod. Vivamus finibus rutrum orci eget commodo. Proin bibendum sodales condimentum. Nunc ornare sed ipsum sit amet maximus. Vivamus egestas lorem urna, eu efficitur sapien auctor non. Donec lacus augue, egestas sit amet turpis et, rutrum tincidunt velit. Donec suscipit ante ac iaculis tincidunt. Vestibulum erat tellus, consequat a quam in, suscipit aliquet enim. Maecenas ut eros lectus. Fusce porta massa ut odio efficitur, vitae eleifend lacus vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sed finibus purus, nec viverra massa. Maecenas a quam scelerisque, semper libero id, tempor urna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Praesent fermentum, est non porttitor molestie, tellus velit semper nunc, eget bibendum libero quam ut eros.
-            </p>
-            <p>
-                Duis ac ex mollis, vulputate sem a, pretium lorem. Vestibulum id porttitor dolor. Praesent tincidunt porttitor est eu facilisis. Duis laoreet aliquet tempor. Praesent facilisis neque et accumsan bibendum. Aliquam maximus, nulla a convallis venenatis, purus metus egestas nulla, et pharetra leo massa id enim. Maecenas fermentum purus at magna pellentesque, a faucibus tortor sodales. Sed eget sem mi. Fusce at maximus felis, vitae fringilla elit. Donec a nulla aliquam velit euismod semper. Maecenas laoreet consequat sem, sit amet tincidunt erat malesuada at.
-            </p>
-            <p>
-                Aliquam et quam eget mauris luctus rhoncus. Maecenas blandit tortor neque, non fermentum dolor suscipit quis. Suspendisse id elit quis quam placerat condimentum. Donec ac nisi eget nibh tempus consectetur at in mi. Integer feugiat arcu vitae dolor tempor, ut egestas eros pretium. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse turpis felis, ullamcorper ut tincidunt ac, semper sit amet nibh. Nulla suscipit nulla urna, luctus viverra nisl rhoncus id. Vivamus ut nisl tortor.
-            </p>
-            <p>
-                Fusce maximus pretium lectus, non congue nibh lobortis ac. Phasellus tincidunt in massa vitae dapibus. Etiam ut augue arcu. Quisque sagittis purus non dui ultricies ultrices. Curabitur iaculis sapien quis magna sagittis, et lacinia risus egestas. Sed eleifend pellentesque nisl elementum consequat. Praesent lobortis nisl id ex accumsan dictum. Proin imperdiet lorem at quam aliquet pulvinar. Praesent tincidunt, enim eu imperdiet vulputate, arcu massa tincidunt neque, venenatis ultrices massa nisl eu dolor. Donec congue et nulla ullamcorper cursus. Praesent dictum semper porttitor. Nunc sit amet tempor sapien. Maecenas dignissim quis lacus vitae faucibus. Nulla aliquam, purus sit amet imperdiet lacinia, tortor turpis ultricies lacus, vitae pulvinar tellus massa non eros. Morbi sollicitudin tristique lorem, et consequat dui consequat sed. In rutrum eros elit, ac imperdiet dui rhoncus id.
-            </p>
-            <p>
-                Suspendisse ac leo eget sapien malesuada consectetur. Nullam ornare justo in rhoncus ullamcorper. In eget euismod tortor, egestas malesuada lorem. Donec at magna non mi finibus viverra. Vestibulum sem tellus, iaculis sit amet dolor at, consequat suscipit erat. Phasellus imperdiet sollicitudin ligula eu blandit. Donec faucibus ex at tortor efficitur dapibus. Ut dapibus congue aliquam.
-            </p>
-        </div>
-        <div class="col-xl-3 col-lg-4 col-md-5 text-right">
-            <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Ship Info</button>
-            <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Missions</button>
-            <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Others</button>
-            <hr style="border-top: 1px solid white" />
-            <button class="btn-block btn-danger"><span class="fas fa-rocket"></span> Self-Destruct</button>
-
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <hr style="border-top: 1px solid white" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg m-1">
-            <button class="btn-block btn-primary">Option 1. Lorem ipsum dolor si amet</button>
-        </div>
-        <div class="col-lg m-1">
-            <button class="btn-block btn-primary">Option 2</button>
-        </div>
-        <div class="col-lg m-1">
-            <button class="btn-block btn-primary">Option 3</button>
-        </div>
-        <div class="col-lg m-1">
-            <button class="btn-block btn-primary">Option 4</button>
-        </div>
-        <div class="col-lg m-1">
-            <button class="btn-block btn-primary">Option 5</button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <hr style="border-top: 1px solid white" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <p>Shield: <span class="text-success">OK</span></p>
-            <p>Medbay: <span class="text-danger">Inoperative</span></p>
-            <p>Life Support: <span class="text-success">OK</span></p>
-            <p>Engines: <span class="text-warning">Damaged</span></p>
-            <p>Power: <span class="text-success">OK</span></p>
-        </div>
-
-    </div>
-    <p class="text-white-50"><a href="#top">Back to top</a>.</p>
-</div>
-
-<footer class="fixed-bottom d-flex flex-row-reverse p-1">
-    <div class="bar flex-grow-0 flex-shrink-0 align-self-end" >
-        <div id="bar-red"></div>
-        <div id="bar-base"></div>
-        <div id="bar-shield-red"></div>
-        <div id="bar-shield-base"></div>
-        <div>
-            <table class="numTable">
-                <tr>
-                    <td class="hpnum text-center">240</td>
-                </tr>
-                <tr>
-                    <td class="shieldnum text-center">240</td>
-                </tr>
-            </table>
-        </div>
-    </div>
-
-    <div class="p-2 align-self-end overflow-hidden">
-        <div class="d-flex flex-wrap-reverse text-center">
-            <div class="flex-column ml-md-2 mr-md-2 mt-md-0 mb-md-0 m-2">
-                <span class="fas fa-circle-notch status-icons text-success"></span>
-                <p class="m-0 status-text">800/800</p>
+        <div class="row">
+            <div class="col">
+                <hr style="border-top: 1px solid white" />
             </div>
-            <div class="flex-column ml-md-2 mr-md-2 mt-md-0 mb-md-0 m-2">
-                <span class="fas fa-plus-square status-icons text-danger"></span>
-                <p class="m-0 status-text">---</p>
-            </div>
-            <div class="flex-column ml-md-2 mr-md-2 mt-md-0 mb-md-0 m-2">
-                <span class="fas fa-thermometer-full status-icons text-success"></span>
-                <p class="m-0 status-text">800/800</p>
-            </div>
-            <div class="flex-column ml-md-2 mr-md-2 mt-md-0 mb-md-0 m-2">
-                <span class="fas fa-rocket status-icons text-warning"></span>
-                <p class="m-0 status-text">100/800</p>
-            </div>
-            <div class="flex-column ml-md-2 mr-md-2 mt-md-0 mb-md-0 m-2">
-                <span class="fas fa-car-battery status-icons text-success"></span>
-                <p class="m-0 status-text">800/800</p>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p>Shield: <span class="text-success">OK</span></p>
+                <p>Medbay: <span class="text-danger">Inoperative</span></p>
+                <p>Life Support: <span class="text-success">OK</span></p>
+                <p>Engines: <span class="text-warning">Damaged</span></p>
+                <p>Power: <span class="text-success">OK</span></p>
             </div>
 
         </div>
+        <p class="text-white-50"><a href="#top">Back to top</a>.</p>
     </div>
 
-</footer>
+    <footer class="fixed-bottom d-flex flex-row-reverse p-1">
+        <div class="bar flex-grow-0 flex-shrink-0 align-self-end">
+            <div id="bar-red"></div>
+            <div id="bar-base"></div>
+            <div id="bar-shield-red"></div>
+            <div id="bar-shield-base"></div>
+            <div>
+                <table class="numTable">
+                    <tr>
+                        <td class="hpnum text-center">@Model.Player.CurrentHull</td>
+                    </tr>
+                    <tr>
+                        <td class="shieldnum text-center">@(shield != null ? shield.CurrentCapacity : 0)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="p-2 align-self-end overflow-hidden">
+            <div class="d-flex flex-wrap-reverse text-center">
+                @foreach (var system in Model.Player.Systems)
+                {
+                    <div class="flex-column ml-md-2 mr-md-2 mt-md-0 mb-md-0 m-2">
+                        <span class="@system.IconClass status-icons text-success"></span>
+                        <p class="m-0 status-text">@system.CurrentIntegrity/@system.MaximumIntegrity</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </footer>
+
+}
+else
+{
+    <div class="jumbotron bg-dark">
+        <h1 class="display-1 text-center mb-3">Not Logged In</h1>
+        <p class="text-center">No game has been loaded. Log in from the menu at the top</p>
+    </div>
+    <div id="login-form" class="jumbotron bg-dark">
+        <h1>Load Game</h1>
+        <form method="post" >
+            <div class="form-group">
+                <label for="email">Full Name:</label>
+                <input type="text" class="form-control" name="name">
+            </div>
+            <div class="form-group">
+                <label for="pwd">Session ID:</label>
+                <input type="password" class="form-control" name="pwd">
+            </div>
+
+            <button type="submit" class="btn-block btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <div id="register-form" class="jumbotron bg-dark">
+        <h1>Start New Game</h1>
+        <form asp-controller="Home" asp-action="Register" method="post">
+            <div class="form-group">
+                <label for="email">Full Name:</label>
+                <input type="text" class="form-control" name="name">
+            </div>
+            <button type="submit" class="btn-block btn-primary">Submit</button>
+        </form>
+    </div>
+}
+
+@section Scripts {
+    @if (Model != null)
+    {
+        <script>
+            $(document).ready(function () {
+
+                barBase.set(@(Model.Player.CurrentHull / Model.Player.MaximumHull));
+                barBaseRed.set(@(Model.Player.CurrentHull / Model.Player.MaximumHull));
+                barShieldBase.set(@(shield!=null ? shield.CurrentCapacity/shield.MaxCapacity : 0));
+                barShieldRed.set(@(shield!=null ? shield.CurrentCapacity/shield.MaxCapacity : 0));
+
+            });
+
+    function clicky() {
+        $.post('home/damage', { data:'@Model.SessionId' }, function (resp) {
+            healthDamage(resp);
+        })
+                
+            }
+        </script>
+    }
+    <script>
+
+        $('#login-form').hide();
+        $('#register-form').hide();
+        function showLogin() {
+            $('#login-form').show(1000);
+            $('#register-form').hide(1000);
+        }
+
+        function showRegister() {
+            $('#register-form').show(1000);
+            $('#login-form').hide(1000);
+        }
+    </script>
+}

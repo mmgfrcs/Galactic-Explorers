@@ -35,27 +35,7 @@ let barShieldRed = new ProgressBar.Circle("#bar-shield-red", {
     easing: 'easeOut'
 });
 
-$(document).ready(function () {
 
-    barBase.set(0.5);
-    barBaseRed.set(0.5);
-    barShieldBase.set(0.5);
-    barShieldRed.set(0.5);
-
-    setTimeout(function () {
-        healthDamage(0.2);
-        shieldDamage(0.5);
-    }, 2000);
-
-    setTimeout(function () {
-        shieldHeal(1.0)
-    }, 4000);
-
-    setTimeout(function () {
-        shieldDamage(0.7);
-        healthDamage(0.1);
-    }, 6000);
-});
 
 function healthDamage(damage) {
     barBase.animate(barBase.value() - damage);

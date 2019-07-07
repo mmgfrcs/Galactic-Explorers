@@ -78,8 +78,12 @@ footer {
     font-size: 3rem;
 }
 
-.dot-planet {
+.dot-planet, .dot-player {
     font-size: 2rem;
+}
+
+.dot-planet:hover {
+    zoom: 1.2;
 }
 
 
