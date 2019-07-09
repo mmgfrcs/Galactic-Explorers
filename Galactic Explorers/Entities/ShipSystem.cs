@@ -39,6 +39,7 @@ namespace GalacticExplorers.Entities
         {
             currIntegrity -= amount;
             if (currIntegrity < 0) currIntegrity = 0;
+            if (currIntegrity > MaximumIntegrity) currIntegrity = MaximumIntegrity;
         }
 
         public static ShipSystem Load(string name)

@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Stories\Start.json" />
+    <None Include="Stories\Start\Start.json" />
   </ItemGroup>
 
 

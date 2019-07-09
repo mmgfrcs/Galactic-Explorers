@@ -48,10 +48,26 @@ namespace GalacticExplorers.Entities
             this.position = position;
         }
 
+        public void AddCash(int amount)
+        {
+            Cash = Math.Max(Cash + amount, 0);
+        }
+
+        public void AddMaterial(int amount)
+        {
+            Material = Math.Max(Material + amount, 0);
+        }
+
+        public void AddFuel(int amount)
+        {
+            Fuel = Math.Max(Fuel + amount, 0);
+        }
+
         public void Damage(float amount)
         {
             CurrentHull -= amount;
             if (CurrentHull < 0) CurrentHull = 0;
+            if (CurrentHull > MaximumHull) CurrentHull = MaximumHull;
         }
 
         public void ChangeSector(Sector newSector, Point newPosition)

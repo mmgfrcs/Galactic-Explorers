@@ -11,6 +11,11 @@ namespace GalacticExplorers
 {
     public class GameManager
     {
+        public enum GameOverType
+        {
+            Generic, Stranded
+        }
+
         public static GameManager Instance;
 
         Dictionary<string, GameData> games = new Dictionary<string, GameData>();
@@ -19,11 +24,21 @@ namespace GalacticExplorers
 
         public GameManager()
         {
-            foreach(var path in Directory.GetFiles("Stories"))
+            foreach (var path in Directory.GetFiles("Stories", "*.*", SearchOption.AllDirectories))
             {
                 Story s = JsonConvert.DeserializeObject<Story>(File.ReadAllText(path));
                 stories.Add(s);
             }
+        }
+
+        public Story GetGameOverStory()
+        {
+            return stories.Find(x => x.id == "GAME-OVER");
+        }
+
+        public Story GetNextStory(Story currStory, int opt)
+        {
+            return stories.Find(x => x.id == currStory.choices[0].gotoId);
         }
 
         public string StartNewGame(string playername)
@@ -49,6 +64,7 @@ namespace GalacticExplorers
             {
                 games[sessionId] = data;
             }
+            else throw new ArgumentException("Session ID not found");
         }
     }
 }

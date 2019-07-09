@@ -2,5 +2,6 @@
   "id": "GAME-START-LOST-2",
   "title": "Lost In Space II",
   "descriptionLine": [ "Continuity of Lorem Ipsum" ],
+  "effects": ["hull -100", "cash 2500 25000", "material 25"],
   "weight": 0
 }

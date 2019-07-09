@@ -9,13 +9,14 @@
     Layout = "_Layout";
     ViewData["Title"] = "Home Page";
     Shield shield = Model?.Player.Systems.Find(x => x.SystemName == "Shield") as Shield;
+    GameData gameData = Model;
 }
 <nav id="top" class="navbar navbar-expand-sm bg-dark navbar-dark mb-2">
     <a class="navbar-brand" href="#">Galactic Explorers</a>
     <ul class="navbar-nav">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                @(Model == null ? "Guest" : Model.Player.Name)
+                @(gameData == null ? "Guest" : gameData.Player.Name)
             </a>
             <div class="dropdown-menu">
                 <a class="dropdown-item" href="#" onclick="showRegister()">Start New Game</a>
@@ -26,89 +27,97 @@
             </div>
         </li>
         <li class="nav-item navbar-text">
-            @(Model != null ? Model.SessionId : "Session")
+            @(Model != null ? gameData.SessionId : "Session")
         </li>
     </ul>
 
 </nav>
 
-@if (Model != null)
+@if (gameData != null)
 {
-    <div class="container-fluid">
-        <div class="row">
-            <div class="position-relative border m-2 mb-3" style="width: 100%; height: 480px">
-                @{string spanClass = "";}
-                @foreach (var loc in Model.Player.CurrentSector.Locations)
-                {
-                    if (loc.dangerLevel == DangerLevel.Hostile) { spanClass = "text-danger"; }
-                    else if (loc.dangerLevel == DangerLevel.Friendly) { spanClass = "text-success"; }
-                    else { spanClass = ""; }
-                    <span class="fas fa-circle dot-planet position-absolute @spanClass" style="top: @loc.position.x% ; left: @loc.position.y%"></span>
-                }
 
-                <span class="far fa-dot-circle dot-player position-absolute" style="top: @Model.Player.Position.x%; left: @Model.Player.Position.y%"> </span>
-
-            </div>
-        </div>
-        <div class="row">
-            <h1 class="col">@Model.Story.title <small>(@Model.Player.Position.x.ToString("n0"),@Model.Player.Position.y.ToString("n0"))</small></h1>
-        </div>
-        <div class="row text-center lead">
-            <div class="col-md"><span class="fas fa-coins"></span> @Model.Player.Cash.ToString("n0")</div>
-            <div class="col-md"><span class="fas fa-boxes"></span> @Model.Player.Material.ToString("n0")</div>
-            <div class="col-md"><span class="fas fa-gas-pump"></span> @Model.Player.Fuel.ToString("n0")</div>
-        </div>
-        <div class="row">
-            <p class="col text-muted">Location: @Model.Player.CurrentSector.SectorName</p>
-        </div>
-        <div class="row">
-            <div class="col-xl-9 col-lg-8 col-md-7 ">
-                @foreach(var desc in Model.Story.descriptionLine)
-                {
-                    <p>@desc</p>
-                }
-
-            </div>
-            <div class="col-xl-3 col-lg-4 col-md-5 text-right">
-                <button class="btn-block btn-primary" onclick="clicky()"><span class="fas fa-rocket"></span> Ship Info</button>
-                <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Missions</button>
-                <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Others</button>
-                <hr style="border-top: 1px solid white" />
-                <button class="btn-block btn-danger"><span class="fas fa-rocket"></span> Self-Destruct</button>
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <hr style="border-top: 1px solid white" />
-            </div>
-        </div>
-        <div class="row">
-            @{ int i = 0; }
-            @foreach (var choice in Model.Story.choices)
+<div class="container-fluid">
+    <div class="row">
+        <div class="position-relative border m-2 mb-3" style="width: 100%; height: 480px">
+            @{string spanClass = "";}
+            @foreach (var loc in gameData.Player.CurrentSector.Locations)
             {
-                <div class="col-lg m-1">
-                    <button class="btn-block btn-primary">@choice.text</button>
-                </div>
+                if (loc.dangerLevel == DangerLevel.Hostile) { spanClass = "text-danger"; }
+                else if (loc.dangerLevel == DangerLevel.Friendly) { spanClass = "text-success"; }
+                else { spanClass = ""; }
+                <span class="fas fa-circle dot-planet position-absolute @spanClass" style="top: @loc.position.x% ; left: @loc.position.y%"></span>
             }
+
+            <span class="far fa-dot-circle dot-player position-absolute" style="top: @gameData.Player.Position.x%; left: @gameData.Player.Position.y%"> </span>
+
         </div>
+    </div>
+    <div class="row">
+        <h1 class="col">@gameData.Story.title <small>(@gameData.Player.Position.x.ToString("n0"),@gameData.Player.Position.y.ToString("n0"))</small></h1>
+    </div>
+    <div class="row text-center lead">
+        <div class="col-md"><span class="fas fa-coins"></span> @gameData.Player.Cash.ToString("n0")</div>
+        <div class="col-md"><span class="fas fa-boxes"></span> @gameData.Player.Material.ToString("n0")</div>
+        <div class="col-md"><span class="fas fa-gas-pump"></span> @gameData.Player.Fuel.ToString("n0")</div>
+    </div>
+    <div class="row">
+        <p class="col text-muted">Location: @gameData.Player.CurrentSector.SectorName</p>
+    </div>
+    <div class="row">
+        <div class="col-xl-9 col-lg-8 col-md-7 ">
+            @foreach (var desc in gameData.Story.descriptionLine)
+            {
+                <p>@desc</p>
+            }
+
+        </div>
+        <div class="col-xl-3 col-lg-4 col-md-5 text-right">
+            <button class="btn-block btn-primary" onclick="clicky()"><span class="fas fa-rocket"></span> Ship Info</button>
+            <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Missions</button>
+            <button class="btn-block btn-primary"><span class="fas fa-rocket"></span> Others</button>
+            <hr style="border-top: 1px solid white" />
+            <button class="btn-block btn-danger"><span class="fas fa-rocket"></span> Self-Destruct</button>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <hr style="border-top: 1px solid white" />
+        </div>
+    </div>
+
+    @{ int i = 0; }
+    @if (gameData.Story.choices != null)
+    {
+        @foreach (var choice in gameData.Story.choices)
+        {
+            <div class="row">
+                <div class="col-lg m-1">
+                    <button class="btn-block btn-primary" onclick="opt(@i)">@choice.text</button>
+                </div>
+            </div>
+
+            i++;
+        }
         <div class="row">
             <div class="col">
                 <hr style="border-top: 1px solid white" />
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <p>Shield: <span class="text-success">OK</span></p>
-                <p>Medbay: <span class="text-danger">Inoperative</span></p>
-                <p>Life Support: <span class="text-success">OK</span></p>
-                <p>Engines: <span class="text-warning">Damaged</span></p>
-                <p>Power: <span class="text-success">OK</span></p>
-            </div>
+    }
 
+    <div class="row">
+        <div class="col">
+            <p>Shield: <span class="text-success">OK</span></p>
+            <p>Medbay: <span class="text-danger">Inoperative</span></p>
+            <p>Life Support: <span class="text-success">OK</span></p>
+            <p>Engines: <span class="text-warning">Damaged</span></p>
+            <p>Power: <span class="text-success">OK</span></p>
         </div>
-        <p class="text-white-50"><a href="#top">Back to top</a>.</p>
+
     </div>
+    <p class="text-white-50"><a href="#top">Back to top</a>.</p>
+</div>
 
     <footer class="fixed-bottom d-flex flex-row-reverse p-1">
         <div class="bar flex-grow-0 flex-shrink-0 align-self-end">
@@ -119,10 +128,10 @@
             <div>
                 <table class="numTable">
                     <tr>
-                        <td class="hpnum text-center">@Model.Player.CurrentHull</td>
+                        <td id="hpValue" class="hpnum text-center">@gameData.Player.CurrentHull</td>
                     </tr>
                     <tr>
-                        <td class="shieldnum text-center">@(shield != null ? shield.CurrentCapacity : 0)</td>
+                        <td id="shieldValue" class="shieldnum text-center">@(shield != null ? shield.CurrentCapacity : 0)</td>
                     </tr>
                 </table>
             </div>
@@ -130,7 +139,7 @@
 
         <div class="p-2 align-self-end overflow-hidden">
             <div class="d-flex flex-wrap-reverse text-center">
-                @foreach (var system in Model.Player.Systems)
+                @foreach (var system in gameData.Player.Systems)
                 {
                     <div class="flex-column ml-md-2 mr-md-2 mt-md-0 mb-md-0 m-2">
                         <span class="@system.IconClass status-icons text-success"></span>
@@ -151,7 +160,7 @@ else
     </div>
     <div id="login-form" class="jumbotron bg-dark">
         <h1>Load Game</h1>
-        <form method="post" >
+        <form method="post">
             <div class="form-group">
                 <label for="email">Full Name:</label>
                 <input type="text" class="form-control" name="name">
@@ -178,24 +187,30 @@ else
 }
 
 @section Scripts {
-    @if (Model != null)
+    @if (gameData != null)
     {
         <script>
             $(document).ready(function () {
 
-                barBase.set(@(Model.Player.CurrentHull / Model.Player.MaximumHull));
-                barBaseRed.set(@(Model.Player.CurrentHull / Model.Player.MaximumHull));
+                barBase.set(@(gameData.Player.CurrentHull / gameData.Player.MaximumHull));
+                barBaseRed.set(@(gameData.Player.CurrentHull / gameData.Player.MaximumHull));
                 barShieldBase.set(@(shield!=null ? shield.CurrentCapacity/shield.MaxCapacity : 0));
                 barShieldRed.set(@(shield!=null ? shield.CurrentCapacity/shield.MaxCapacity : 0));
 
             });
 
+    function opt(num) {
+        $.post('home/options', { opt: num }, function (resp) {
+            window.location.href = '/';
+        });
+    }
+
     function clicky() {
-        $.post('home/damage', { data:'@Model.SessionId' }, function (resp) {
-            healthDamage(resp);
-        })
-                
-            }
+        $.post('home/damage', { data: '@gameData.SessionId' }, function (resp) {
+            $.redirect('/', { sessionId: '@gameData.SessionId' });
+        });
+
+    }
         </script>
     }
     <script>

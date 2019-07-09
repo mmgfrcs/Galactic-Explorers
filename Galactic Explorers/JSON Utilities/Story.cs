@@ -11,7 +11,7 @@ namespace GalacticExplorers.JSONUtilities
         public string id;
         public string title;
         public List<string> descriptionLine;
-
+        public List<string> effects;
         public float weight;
 
         public List<Choice> choices;

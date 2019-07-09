@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using GalacticExplorers.Models;
 using Newtonsoft.Json;
 using GalacticExplorers.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace GalacticExplorers.Controllers
 {
@@ -17,9 +18,10 @@ namespace GalacticExplorers.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Index()
         {
-            if (Request.Cookies.TryGetValue("GE-Session", out string val))
+            string session = HttpContext.Session.GetString("GE-Session");
+            if (session != null)
             {
-                return View(GameManager.Instance.GetGame(val));
+                return View(GameManager.Instance.GetGame(session));
             }
             else return View(null);
         }
@@ -28,11 +30,8 @@ namespace GalacticExplorers.Controllers
         public IActionResult Register(string name)
         {
             string id = GameManager.Instance.StartNewGame(name);
-            Response.Cookies.Append("GE-Session", id, new Microsoft.AspNetCore.Http.CookieOptions()
-            {
-                MaxAge = TimeSpan.FromSeconds(30)
-                
-            });
+
+            HttpContext.Session.SetString("GE-Session", id);
             return LocalRedirect("/");
         }
 
@@ -44,9 +43,11 @@ namespace GalacticExplorers.Controllers
             {
                 if (data.Player.Name == name)
                 {
-                    Response.Cookies.Append("GE-Session", sessionId, new Microsoft.AspNetCore.Http.CookieOptions() { MaxAge = TimeSpan.FromSeconds(30) });
+                    HttpContext.Session.SetString("GE-Session", data.SessionId);
+                    //return LocalRedirect("/");
                 }
             }
+            
             return LocalRedirect("/");
         }
 
@@ -57,6 +58,23 @@ namespace GalacticExplorers.Controllers
             float dmg = gameData.Player.CurrentHull / 2f;
             gameData.Player.Damage(dmg);
             return Ok(dmg / gameData.Player.MaximumHull);
+        }
+
+        [HttpPost, Route("{controller}/options")]
+        public IActionResult OnPostOptions(int opt)
+        {
+            string session = HttpContext.Session.GetString("GE-Session");
+            if (session != null)
+            {
+                GameData gameData = GameManager.Instance.GetGame(session);
+                Console.WriteLine($"{session}: {gameData.Story.id}");
+                gameData.ChangeStory(opt);
+                Console.WriteLine($"{session}: {gameData.Story.id}");
+                GameManager.Instance.SaveGameData(session, gameData);
+                return StatusCode(204);
+            }
+            else return Unauthorized();
+
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
